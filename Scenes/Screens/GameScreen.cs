@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Godot;
 using MemoryGame.Audio;
 using MemoryGame.Core;
@@ -17,6 +18,7 @@ public partial class GameScreen : VBoxContainer
 	private static readonly Color WrongColor = new(1f, 0.45f, 0.45f);
 	private static readonly Color PlaceholderColor = new(1f, 1f, 1f, 0.35f);
 	private static readonly Color HitFlashColor = new(1f, 0.3f, 0.3f);
+	private static readonly Color TimeStopColor = new(0.45f, 0.85f, 1f);
 
 	private Battle? _battle;
 	private Tween? _spriteTween;
@@ -32,6 +34,9 @@ public partial class GameScreen : VBoxContainer
 	private Label _stageLabel = null!;
 	private Label _timeLabel = null!;
 	private Label _streakLabel = null!;
+	private HBoxContainer _skillBar = null!;
+	private readonly Dictionary<Skill, Button> _skillButtons = [];
+	private bool _showingTimeStop;
 	private Label _healthLabel = null!;
 	private ProgressBar _healthBar = null!;
 	private Control _monsterStage = null!;
@@ -46,6 +51,7 @@ public partial class GameScreen : VBoxContainer
 		_stageLabel = GetNode<Label>("%StageLabel");
 		_timeLabel = GetNode<Label>("%TimeLabel");
 		_streakLabel = GetNode<Label>("%StreakLabel");
+		_skillBar = GetNode<HBoxContainer>("%SkillBar");
 		_healthLabel = GetNode<Label>("%HealthLabel");
 		_healthBar = GetNode<ProgressBar>("%HealthBar");
 		_monsterStage = GetNode<Control>("%MonsterStage");
@@ -67,6 +73,8 @@ public partial class GameScreen : VBoxContainer
 		_battle = battle;
 		_battle.PhaseChanged += OnPhaseChanged;
 		_battle.AnswerChecked += OnAnswerChecked;
+		_battle.SkillUsed += OnSkillUsed;
+		BuildSkillButtons(battle);
 
 		_stageLabel.Text = $"Stage {stage}";
 		_healthTween?.Kill();
@@ -78,6 +86,8 @@ public partial class GameScreen : VBoxContainer
 		_showBar.MaxValue = battle.ShowDuration;
 		UpdateStreakLabel(battle);
 		_lastTickSecond = int.MaxValue;
+		_showingTimeStop = false;
+		_timeLabel.RemoveThemeColorOverride("font_color");
 		UpdateHud();
 
 		RunCountdown(battle);
@@ -146,7 +156,7 @@ public partial class GameScreen : VBoxContainer
 		_battle.Tick((float)delta);
 		UpdateHud();
 		if (_battle.Phase == BattlePhase.Showing)
-			_showBar.Value = _battle.ShowDuration - _battle.PhaseElapsed;
+			_showBar.Value = _battle.CurrentShowDuration - _battle.PhaseElapsed;
 		PlayTimerWarning(_battle);
 	}
 
@@ -203,7 +213,8 @@ public partial class GameScreen : VBoxContainer
 				SetText(_numberLabel, battle.CurrentNumber);
 				SetText(_messageLabel, "Remember this!");
 				AudioManager.Instance.Play(Sfx.NumberShow);
-				_showBar.Value = battle.ShowDuration;
+				_showBar.MaxValue = battle.CurrentShowDuration; // Shorter when replaying the number.
+				_showBar.Value = battle.CurrentShowDuration;
 				SetShowBarVisible(true);
 				_keypad.SetEnabled(false);
 				break;
@@ -225,6 +236,7 @@ public partial class GameScreen : VBoxContainer
 		SetProcess(false);
 		_keypad.SetEnabled(false);
 		SetShowBarVisible(false);
+		UpdateSkillButtons(battle);
 
 		if (won)
 		{
@@ -393,14 +405,102 @@ public partial class GameScreen : VBoxContainer
 
 	private void UpdateHud()
 	{
-		if (_battle is not null)
-			_timeLabel.Text = $"{Mathf.CeilToInt(_battle.TimeLeft)}s";
+		if (_battle is null)
+			return;
+		_timeLabel.Text = _battle.IsTimeStopped
+			? $"{Mathf.CeilToInt(_battle.TimeLeft)}s (stopped)"
+			: $"{Mathf.CeilToInt(_battle.TimeLeft)}s";
+		if (_battle.IsTimeStopped != _showingTimeStop)
+		{
+			_showingTimeStop = _battle.IsTimeStopped;
+			if (_showingTimeStop)
+				_timeLabel.AddThemeColorOverride("font_color", TimeStopColor);
+			else
+				_timeLabel.RemoveThemeColorOverride("font_color");
+		}
+		UpdateSkillButtons(_battle);
+	}
+
+	/// <summary>
+	/// One button per skill slot, in the bottom corners of the monster area. Empty slots are shown too
+	/// (faded, with a lock) so players know skills exist before they unlock any.
+	/// </summary>
+	private void BuildSkillButtons(Battle battle)
+	{
+		foreach (var child in _skillBar.GetChildren())
+			child.QueueFree();
+		_skillButtons.Clear();
+
+		for (int slot = 0; slot < SkillCatalog.MaxEquipped; slot++)
+		{
+			if (slot > 0) // Push the next button to the opposite corner.
+				_skillBar.AddChild(new Control { SizeFlagsHorizontal = SizeFlags.ExpandFill, MouseFilter = MouseFilterEnum.Ignore });
+
+			var button = new Button
+			{
+				ExpandIcon = true,
+				CustomMinimumSize = new Vector2(100, 100),
+				FocusMode = FocusModeEnum.None,
+			};
+			button.AddToGroup(AudioManager.SilentButtonGroup); // OnSkillUsed plays the skill sound.
+
+			if (slot < battle.Skills.Count)
+			{
+				var skill = battle.Skills[slot];
+				button.Icon = ArtLoader.SkillIcon(skill.Id);
+				button.TooltipText = $"{skill.Name}: {skill.Description}";
+				button.Pressed += () => _battle?.UseSkill(skill);
+				_skillButtons[skill] = button;
+			}
+			else
+			{
+				button.Icon = ArtLoader.EmptySkillSlotIcon();
+				button.TooltipText = "Empty skill slot: clear stages to unlock skills, then equip them before a run.";
+				button.Disabled = true;
+				button.Modulate = new Color(1, 1, 1, 0.5f);
+			}
+			_skillBar.AddChild(button);
+		}
+		UpdateSkillButtons(battle);
+	}
+
+	private void UpdateSkillButtons(Battle battle)
+	{
+		foreach (var (skill, button) in _skillButtons)
+		{
+			button.Disabled = !battle.CanUseSkill(skill);
+			// Used skills fade out; skills that just can't be used right now (e.g. Replay while the number shows) stay visible.
+			button.Modulate = battle.HasUsed(skill) ? new Color(1, 1, 1, 0.25f) : Colors.White;
+		}
+	}
+
+	private void OnSkillUsed(Skill skill, int damage)
+	{
+		AudioManager.Instance.Play(Sfx.SkillUse);
+
+		if (damage > 0)
+		{
+			SetText(_messageLabel, $"{skill.Name}! {damage} damage", CorrectColor);
+			PlayHit(damage);
+		}
+		else
+		{
+			ShowPopup(skill.Name, TimeStopColor);
+			if (skill == SkillCatalog.TimeStop)
+				SetText(_messageLabel, $"Time stopped for {SkillCatalog.TimeStopSeconds:0} seconds", TimeStopColor);
+			else if (skill == SkillCatalog.DoubleStrike)
+				SetText(_messageLabel, "Your next correct answer deals double damage", TimeStopColor);
+			else if (skill == SkillCatalog.SecondWind)
+				SetText(_messageLabel, $"+{SkillCatalog.SecondWindSeconds:0} seconds", TimeStopColor);
+			// Replay and Skip change the number; the phase change updates the message.
+		}
+		UpdateHud();
 	}
 
 	private void UpdateHealthLabel()
 	{
 		var monster = _battle!.Monster;
-		_healthLabel.Text = $"{monster.Name}   {monster.Health} / {monster.MaxHealth} HP";
+		_healthLabel.Text = $"{monster.Health} / {monster.MaxHealth}";
 	}
 
 	private static void SetText(Label label, string text, Color? color = null)

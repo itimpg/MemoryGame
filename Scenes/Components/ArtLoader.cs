@@ -14,6 +14,10 @@ public static class ArtLoader
 
 	public static Texture2D UpgradeIcon(string upgradeId) => Load("Upgrades", upgradeId, "upgrade");
 
+	public static Texture2D SkillIcon(string skillId) => Load("Skills", skillId, "skill");
+
+	public static Texture2D EmptySkillSlotIcon() => Load("Skills", "empty_slot", "skill");
+
 	private static Texture2D Load(string folder, string id, string fallbackId)
 	{
 		foreach (string extension in Extensions)

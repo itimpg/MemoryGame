@@ -17,6 +17,8 @@ public enum Sfx
 	UpgradePick,
 	GameOver,
 	TimerTick,
+	SkillUse,
+	SkillUnlock,
 	CountdownTick,
 	CountdownGo,
 }

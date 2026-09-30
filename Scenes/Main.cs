@@ -1,56 +1,70 @@
 using System;
 using Godot;
 using MemoryGame.Audio;
-using MemoryGame.BestRuns;
 using MemoryGame.Core;
+using MemoryGame.Progress;
 using MemoryGame.UI;
 
 namespace MemoryGame;
 
 /// <summary>
-/// Owns the current run and the best runs table, and switches between screens in response to their signals.
+/// Owns the current run and the player profile, and switches between screens in response to their signals.
 /// </summary>
 public partial class Main : Control
 {
-	private const int BestRunCapacity = 10;
-
 	private readonly Random _rng = new();
 	private Run? _run;
-	private BestRunTable _bestRuns = null!;
+	private PlayerProfile _profile = null!;
 
 	private MainMenuScreen _mainMenu = null!;
+	private LoadoutScreen _loadout = null!;
 	private GameScreen _gameScreen = null!;
 	private StageClearScreen _stageClear = null!;
 	private GameOverScreen _gameOver = null!;
-	private BestRunsScreen _bestRunsScreen = null!;
 	private PauseMenu _pauseMenu = null!;
+	private SkillUnlockPopup _skillUnlockPopup = null!;
 	private Control[] _screens = [];
 
 	public override void _Ready()
 	{
-		_bestRuns = BestRunStorage.Load(BestRunCapacity);
+		_profile = ProfileStorage.Load();
 
 		_mainMenu = GetNode<MainMenuScreen>("%MainMenuScreen");
+		_loadout = GetNode<LoadoutScreen>("%LoadoutScreen");
 		_gameScreen = GetNode<GameScreen>("%GameScreen");
 		_stageClear = GetNode<StageClearScreen>("%StageClearScreen");
 		_gameOver = GetNode<GameOverScreen>("%GameOverScreen");
-		_bestRunsScreen = GetNode<BestRunsScreen>("%BestRunsScreen");
 		_pauseMenu = GetNode<PauseMenu>("%PauseMenu");
-		_screens = [_mainMenu, _gameScreen, _stageClear, _gameOver, _bestRunsScreen];
+		_skillUnlockPopup = CreateSkillUnlockPopup();
+		_screens = [_mainMenu, _loadout, _gameScreen, _stageClear, _gameOver];
 
-		_mainMenu.StartRequested += StartRun;
-		_mainMenu.BestRunsRequested += ShowBestRuns;
+		_mainMenu.StartRequested += OnStartRequested;
+		_mainMenu.ClearSaveRequested += ClearSaveData;
+		_loadout.StartRequested += StartRunWithLoadout;
+		_loadout.BackRequested += ShowMainMenu;
 		_gameScreen.BattleEnded += OnBattleEnded;
 		_gameScreen.PauseRequested += PauseGame;
 		_stageClear.UpgradeChosen += OnUpgradeChosen;
 		_stageClear.NextStageRequested += StartNextStage;
 		_pauseMenu.ResumeRequested += ResumeGame;
 		_pauseMenu.MainMenuRequested += QuitToMainMenu;
-		_gameOver.PlayAgainRequested += StartRun;
+		_gameOver.PlayAgainRequested += OnStartRequested;
 		_gameOver.MenuRequested += ShowMainMenu;
-		_bestRunsScreen.BackRequested += ShowMainMenu;
 
 		ShowMainMenu();
+	}
+
+	/// <summary>
+	/// Added from code rather than placed in main.tscn, so an editor that still has an older copy of
+	/// main.tscn open can't drop it when it saves. Sits above the screens but below the pause menu.
+	/// </summary>
+	private SkillUnlockPopup CreateSkillUnlockPopup()
+	{
+		var popup = GD.Load<PackedScene>("res://Scenes/Components/skill_unlock_popup.tscn").Instantiate<SkillUnlockPopup>();
+		popup.Visible = false;
+		AddChild(popup);
+		MoveChild(popup, _pauseMenu.GetIndex());
+		return popup;
 	}
 
 	public override void _Notification(int what)
@@ -59,7 +73,12 @@ public partial class Main : Control
 		if (what != NotificationWMGoBackRequest)
 			return;
 
-		if (GetTree().Paused)
+		if (_mainMenu.Visible && _mainMenu.CloseDialog())
+			return;
+
+		if (_skillUnlockPopup.Visible)
+			_skillUnlockPopup.Hide();
+		else if (GetTree().Paused)
 			ResumeGame();
 		else if (_gameScreen.IsPlaying)
 			PauseGame();
@@ -76,17 +95,41 @@ public partial class Main : Control
 		AudioManager.Instance.PlayMusic(screen == _gameScreen ? MusicTrack.Battle : MusicTrack.Menu);
 	}
 
-	private void ShowMainMenu() => ShowScreen(_mainMenu);
-
-	private void ShowBestRuns()
+	private void ShowMainMenu()
 	{
-		_bestRunsScreen.Display(_bestRuns.Entries);
-		ShowScreen(_bestRunsScreen);
+		_mainMenu.ShowProgress(_profile);
+		ShowScreen(_mainMenu);
+	}
+
+	private void ClearSaveData()
+	{
+		ProfileStorage.DeleteAll();
+		_profile = new PlayerProfile();
+		ShowMainMenu();
+	}
+
+	/// <summary>Goes to skill selection first, unless there's nothing to choose from yet.</summary>
+	private void OnStartRequested()
+	{
+		if (_profile.UnlockedSkills.Count == 0)
+		{
+			StartRun();
+			return;
+		}
+		_loadout.Display(_profile);
+		ShowScreen(_loadout);
+	}
+
+	private void StartRunWithLoadout()
+	{
+		_profile.Equip([.. _loadout.SelectedSkills]);
+		ProfileStorage.Save(_profile);
+		StartRun();
 	}
 
 	private void StartRun()
 	{
-		_run = new Run(GameRules.Default, _rng);
+		_run = new Run(GameRules.Default, _rng, _profile.EquippedSkills);
 		StartNextStage();
 	}
 
@@ -103,16 +146,14 @@ public partial class Main : Control
 		var run = _run!;
 		if (won)
 		{
-			// Every upgrade is on offer for now; unlocks (meta progression) will narrow this pool.
+			// Every upgrade is on offer for now; unlocks (meta progression) could narrow this pool later.
 			_stageClear.Display(run, run.RollUpgradeOffer(UpgradeCatalog.All));
 			AudioManager.Instance.Play(Sfx.StageClear);
 			ShowScreen(_stageClear);
 			return;
 		}
 
-		int? rank = RecordRun();
-		_gameOver.Display(run, rank);
-		ShowScreen(_gameOver);
+		ShowGameOver(run, RecordRun(run));
 	}
 
 	private void OnUpgradeChosen(string upgradeId)
@@ -137,25 +178,35 @@ public partial class Main : Control
 		GetTree().Paused = false;
 	}
 
-	/// <summary>Ends the run early. It still counts for the best runs, up to the stage the player was on.</summary>
+	/// <summary>
+	/// Ends the run early. It still counts toward skill unlocks, up to the stages already cleared;
+	/// if it unlocked one, the game over screen shows it instead of going straight to the menu.
+	/// </summary>
 	private void QuitToMainMenu()
 	{
 		_gameScreen.Abandon();
-		RecordRun();
 		ResumeGame();
-		ShowMainMenu();
+
+		if (_run is { } run && RecordRun(run) is { UnlockedSkill: not null } reward)
+			ShowGameOver(run, reward);
+		else
+			ShowMainMenu();
 	}
 
-	/// <summary>Adds the finished run to the best runs and clears it. Returns its rank, or null.</summary>
-	private int? RecordRun()
+	private void ShowGameOver(Run run, RunReward reward)
 	{
-		if (_run is null)
-			return null;
+		_gameOver.Display(run, reward, _profile);
+		ShowScreen(_gameOver);
+		if (reward.UnlockedSkill is { } skill)
+			_skillUnlockPopup.Present(skill);
+	}
 
-		int? rank = _bestRuns.Add(BestRunEntry.FromRun(_run, DateTime.Now));
-		if (rank is not null)
-			BestRunStorage.Save(_bestRuns);
+	/// <summary>Adds the finished run to the profile (best stage, skill unlock), saves it and clears the run.</summary>
+	private RunReward RecordRun(Run run)
+	{
+		var reward = _profile.RecordRun(run.Stage, run.Stats.StagesCleared);
+		ProfileStorage.Save(_profile);
 		_run = null;
-		return rank;
+		return reward;
 	}
 }

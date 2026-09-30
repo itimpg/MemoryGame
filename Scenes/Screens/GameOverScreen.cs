@@ -1,5 +1,6 @@
 using Godot;
 using MemoryGame.Core;
+using MemoryGame.Progress;
 
 namespace MemoryGame.UI;
 
@@ -20,20 +21,21 @@ public partial class GameOverScreen : VBoxContainer
 		GetNode<Button>("%MenuButton").Pressed += () => EmitSignal(SignalName.MenuRequested);
 	}
 
-	/// <param name="rank">1-based best run rank, or null if the run didn't make the table.</param>
-	public void Display(Run run, int? rank)
+	public void Display(Run run, RunReward reward, PlayerProfile profile)
 	{
-		string rankText = rank switch
-		{
-			1 => "NEW BEST RUN!\n\n",
-			{ } r => $"That's your #{r} best run!\n\n",
-			null => "",
-		};
+		string rewardText = "";
+		if (reward.UnlockedSkill is { } skill)
+			rewardText += $"New skill unlocked: {skill.Name}!\n{skill.Description}\n\n";
+		else if (profile.NextLockedSkill is { } next)
+			rewardText += $"Clear stage {next.UnlockAtStage} in a run to unlock a new skill.\n\n";
+		if (reward.IsNewBest)
+			rewardText += "NEW BEST STAGE!\n\n";
+
 		var stats = run.Stats;
 		string average = stats.AverageAnswerTime is { } avg ? $"{avg:0.00}s" : "—";
 
 		_summaryLabel.Text =
-			rankText +
+			rewardText +
 			$"Reached stage {run.Stage}\n" +
 			$"Monsters defeated: {stats.StagesCleared}\n" +
 			$"Total damage: {stats.TotalDamage}\n" +

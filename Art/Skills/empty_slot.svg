@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 128 128">
+  <!-- PLACEHOLDER empty skill slot (256x256): shown in battle where no skill is equipped. -->
+  <circle cx="64" cy="64" r="58" fill="none" stroke="#ff3cac" stroke-width="4" stroke-dasharray="10 8"/>
+  <rect x="44" y="60" width="40" height="32" rx="6" fill="#8a8fa0"/>
+  <path d="M52 60 V48 A12 12 0 0 1 76 48 V60" fill="none" stroke="#8a8fa0" stroke-width="7"/>
+</svg>

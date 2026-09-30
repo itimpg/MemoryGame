@@ -37,12 +37,14 @@ warning and stays silent. `Tests/MemoryGame.Tests/AudioFileTests.cs` fails if a 
 | `Sfx/timer_tick` | Once per second during the last 5 seconds of a stage | Clock tick that builds tension | 1500 Hz blip |
 | `Sfx/countdown_tick` | Each "3, 2, 1" of the countdown before a stage | Clear, anticipating beep | 1000 Hz tone |
 | `Sfx/countdown_go` | "Fight!" at the end of the countdown | Energetic start signal (gong, horn, sword draw) | Two-note square |
+| `Sfx/skill_use` | The player uses an active skill (Strike, Time Stop, …) | Magical whoosh or activation burst; one shared sound for every skill for now | Rising sweep |
+| `Sfx/skill_unlock` | The "Congratulations, you unlocked a skill" popup opens after a run | Rewarding fanfare, bigger than `stage_clear`, 1–2 s | Five-note rising arpeggio |
 
 ## Music
 
 | File | Plays on | Feel | Placeholder |
 |---|---|---|---|
-| `Music/music_menu` | Main menu, Stage Cleared, Game Over, Best Runs | Calm, inviting, not distracting | 8 s major arpeggio |
+| `Music/music_menu` | Main menu, skill selection, Stage Cleared, Game Over | Calm, inviting, not distracting | 8 s major arpeggio |
 | `Music/music_battle` | During a stage | Driving and tense, but leaves room to concentrate on the numbers; no melody that competes with counting | 8 s minor arpeggio |
 
 Music keeps playing while the game is paused.

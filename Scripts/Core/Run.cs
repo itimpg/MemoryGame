@@ -22,11 +22,15 @@ public sealed class Run
 	private readonly GameRules _rules;
 	private readonly Random _rng;
 
-	public Run(GameRules rules, Random rng)
+	public Run(GameRules rules, Random rng, IReadOnlyList<Skill>? skills = null)
 	{
 		_rules = rules;
 		_rng = rng;
+		Skills = skills ?? [];
 	}
+
+	/// <summary>Skills equipped for this run; each battle gets one use of each.</summary>
+	public IReadOnlyList<Skill> Skills { get; }
 
 	/// <summary>The current (1-based) stage, or 0 before the first battle.</summary>
 	public int Stage { get; private set; }
@@ -40,7 +44,7 @@ public sealed class Run
 	public Battle StartNextStage()
 	{
 		Stage++;
-		return new Battle(_rules, _rng, StageSetup.For(Stage, _rules), Stats, Upgrades);
+		return new Battle(_rules, _rng, StageSetup.For(Stage, _rules), Stats, Upgrades, Skills);
 	}
 
 	/// <summary>

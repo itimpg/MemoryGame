@@ -27,12 +27,21 @@ public class ArtTests
 	}
 
 	[Fact]
+	public void Empty_skill_slot_icon_exists() =>
+		Assert.Empty(Missing("Skills", ["empty_slot"]));
+
+	[Fact]
+	public void Every_skill_has_an_icon() =>
+		Assert.Empty(Missing("Skills", SkillCatalog.All.Select(s => s.Id)));
+
+	[Fact]
 	public void Every_upgrade_has_an_icon() =>
 		Assert.Empty(Missing("Upgrades", UpgradeCatalog.All.Select(u => u.Id)));
 
 	[Theory]
 	[InlineData("Monsters", "monster")]
 	[InlineData("Upgrades", "upgrade")]
+	[InlineData("Skills", "skill")]
 	public void Fallback_art_exists(string subfolder, string fallbackId) =>
 		Assert.True(File.Exists(Path.Combine(ArtFolder(subfolder), fallbackId + ".svg")));
 }

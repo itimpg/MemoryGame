@@ -20,11 +20,11 @@ public class AudioFileTests
 
 	[Fact]
 	public void Every_sound_effect_has_a_file() =>
-		Assert.Empty(Enum.GetValues<Sfx>().Select(SoundIds.For).Where(id => !Exists("Sfx", id)));
+		Assert.DoesNotContain(Enum.GetValues<Sfx>().Select(SoundIds.For), id => !Exists("Sfx", id));
 
 	[Fact]
 	public void Every_music_track_has_a_file() =>
-		Assert.Empty(Enum.GetValues<MusicTrack>().Select(SoundIds.For).Where(id => !Exists("Music", id)));
+		Assert.DoesNotContain(Enum.GetValues<MusicTrack>().Select(SoundIds.For), id => !Exists("Music", id));
 
 	[Theory]
 	[InlineData(Sfx.MonsterDefeated, "monster_defeated")]

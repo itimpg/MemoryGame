@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 128 128">
+  <!-- PLACEHOLDER skill icon strike (256x256): replace with final art at the same path (.png/.webp also work). -->
+  <circle cx="64" cy="64" r="60" fill="#1c1f28" stroke="#ff3cac" stroke-width="4"/>
+  <g fill="#ef5350" stroke="#ef5350">
+    <path d="M88 24 L100 36 L52 84 L40 72 Z" stroke="none"/>
+    <path d="M36 76 L52 92 L44 100 L28 84 Z" stroke="none"/>
+    <path d="M30 98 L22 106" fill="none" stroke-width="8" stroke-linecap="round"/>
+  </g>
+</svg>

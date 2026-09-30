@@ -13,6 +13,9 @@ right-click the old file → *Replace/Move* or update the reference) so referenc
 | `Monsters/monster.svg` | 768×768 | `ArtLoader.cs` fallback | Used (with a warning) for a monster that has no art of its own. |
 | `Upgrades/<id>.svg` | 256×256 | `StageClearScreen.cs` → upgrade choice buttons, loaded per upgrade | One per upgrade id; see [Upgrade icons](#upgrade-icons). Shown at 88 px on the left of the button. |
 | `Upgrades/upgrade.svg` | 256×256 | `ArtLoader.cs` fallback | Used (with a warning) for an upgrade that has no icon of its own. |
+| `Skills/<id>.svg` | 256×256 | Skill buttons in battle (100 px, bottom corners of the monster) and the skill selection screen (88 px) | One per skill id; see [Skill icons](#skill-icons). |
+| `Skills/skill.svg` | 256×256 | `ArtLoader.cs` fallback | Used (with a warning) for a skill that has no icon of its own. |
+| `Skills/empty_slot.svg` | 256×256 | Empty skill slots in battle (faded) | Shown where no skill is equipped, so players see there are skill slots. Suggest a dashed ring with a lock. |
 | `UI/logo.svg` | 480×200 | `Scenes/Screens/main_menu_screen.tscn` → `Logo` | Game title art on the main menu. |
 | `UI/icon_pause.svg` | 48×48 | `Scenes/Screens/game_screen.tscn` → `PauseButton` | Pause icon in the HUD. |
 | `UI/button_normal.svg` | 96×96, 9-slice | `Themes/default_theme.tres` → Button `normal` | All buttons, including the number pad. |
@@ -140,3 +143,27 @@ The placeholder color and symbol in `Upgrades/*.svg` are a suggested direction.
 | `slow_time` | Slow Time | Numbers stay on screen longer | Hourglass | Cyan `#4dd0e1` |
 | `time_extend` | Extra Time | +5 seconds per stage | Clock, optionally with a small plus | Blue `#42a5f5` |
 | `gamble` | Gamble | Numbers are 1 digit longer but hit harder | Die | Purple `#ab47bc` |
+
+## Skill icons
+
+Skills are active abilities: the player equips up to two before a run and taps one to use it, once per battle.
+In battle they're **icon-only buttons** in the bottom corners of the monster area, so the icon alone must say what the skill does.
+A used skill is shown faded to 25% opacity.
+
+### Requirements for every icon
+
+- **File:** `Skills/<id>.png` (or `.webp` / `.svg`), where `<id>` is the skill id below.
+- **Canvas:** square, **256×256**, shown at **100 px** in battle and 88 px on the selection screen.
+- **Shape:** a **round badge**, so skills never get confused with the square upgrade icons.
+- **One bold symbol**, no text, distinct color per skill; it must still read over the monster art behind it.
+
+### Icon briefs
+
+| Id | Skill | Unlocked by | What it does | Suggested symbol | Placeholder color |
+|---|---|---|---|---|---|
+| `strike` | Strike | Clearing stage 2 | Instantly deals 15% of the monster's max HP | Sword slash | Red `#ef5350` |
+| `replay` | Replay | Clearing stage 3 | Shows the number again for 1 s | Eye | Cyan `#26c6da` |
+| `time_stop` | Time Stop | Clearing stage 4 | Freezes the stage clock for 5 s | Clock with a pause sign, or frozen clock | Light blue `#81d4fa` |
+| `double_strike` | Double Strike | Clearing stage 5 | Next correct answer deals double damage | Two crossed swords, or "x2" shape | Orange `#ffa726` |
+| `second_wind` | Second Wind | Clearing stage 6 | +10 s on the stage clock | Plus sign, wind swirl or hourglass refill | Green `#66bb6a` |
+| `skip` | Skip | Clearing stage 7 | Swaps the current number for a new one | Fast-forward / skip-track symbol | Lavender `#b39ddb` |

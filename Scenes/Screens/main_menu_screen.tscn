@@ -1,14 +1,14 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://c3qxyqbs16rqs"]
 
-[ext_resource type="Script" path="res://Scenes/Screens/MainMenuScreen.cs" id="1_menu"]
-[ext_resource type="Texture2D" path="res://Art/UI/logo.svg" id="2_logo"]
+[ext_resource type="Script" uid="uid://dpaahwym4r715" path="res://Scenes/Screens/MainMenuScreen.cs" id="1_menu"]
+[ext_resource type="Texture2D" uid="uid://b750tmjpgtnsq" path="res://Art/UI/logo.svg" id="2_logo"]
 
-[node name="MainMenuScreen" type="VBoxContainer"]
+[node name="MainMenuScreen" type="VBoxContainer" unique_id=1472835286]
 theme_override_constants/separation = 28
 alignment = 1
 script = ExtResource("1_menu")
 
-[node name="Logo" type="TextureRect" parent="."]
+[node name="Logo" type="TextureRect" parent="." unique_id=370218697]
 custom_minimum_size = Vector2(480, 200)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -16,25 +16,40 @@ texture = ExtResource("2_logo")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="RulesLabel" type="Label" parent="."]
+[node name="Control" type="Control" parent="." unique_id=937682858]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="RulesLabel" type="Label" parent="." unique_id=1997479288]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="Buttons" type="VBoxContainer" parent="."]
+[node name="ProgressLabel" type="Label" parent="." unique_id=45730253]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"StreakLabel"
+horizontal_alignment = 1
+
+[node name="Buttons" type="VBoxContainer" parent="." unique_id=1608022848]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_constants/separation = 20
 
-[node name="StartButton" type="Button" parent="Buttons"]
+[node name="StartButton" type="Button" parent="Buttons" unique_id=1420015825]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(440, 100)
 layout_mode = 2
 text = "Start"
 
-[node name="BestRunsButton" type="Button" parent="Buttons"]
+[node name="ClearSaveButton" type="Button" parent="." unique_id=527217029]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(440, 100)
+visible = false
 layout_mode = 2
-text = "Best Runs"
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 24
+text = "Clear Save Data"
+flat = true

@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" path="res://Scenes/Screens/main_menu_screen.tscn" id="2_menu"]
 [ext_resource type="PackedScene" path="res://Scenes/Screens/game_screen.tscn" id="3_game"]
 [ext_resource type="PackedScene" uid="uid://b6dei3cf4swi5" path="res://Scenes/Screens/game_over_screen.tscn" id="4_over"]
-[ext_resource type="PackedScene" path="res://Scenes/Screens/best_runs_screen.tscn" id="5_scores"]
+[ext_resource type="PackedScene" path="res://Scenes/Screens/loadout_screen.tscn" id="5_loadout"]
 [ext_resource type="PackedScene" path="res://Scenes/Components/pause_menu.tscn" id="6_pause"]
 [ext_resource type="Texture2D" uid="uid://c80b2nu7wp1lx" path="res://Art/background.svg" id="7_bg"]
 [ext_resource type="PackedScene" path="res://Scenes/Screens/stage_clear_screen.tscn" id="8_clear"]
@@ -46,6 +46,11 @@ theme_override_constants/margin_bottom = 48
 unique_name_in_owner = true
 layout_mode = 2
 
+[node name="LoadoutScreen" parent="SafeArea" unique_id=1822287616 instance=ExtResource("5_loadout")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
 [node name="GameScreen" parent="SafeArea" unique_id=770696735 instance=ExtResource("3_game")]
 unique_name_in_owner = true
 visible = false
@@ -57,11 +62,6 @@ visible = false
 layout_mode = 2
 
 [node name="GameOverScreen" parent="SafeArea" unique_id=1110313105 instance=ExtResource("4_over")]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-
-[node name="BestRunsScreen" parent="SafeArea" unique_id=1616425488 instance=ExtResource("5_scores")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
