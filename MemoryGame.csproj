@@ -1,0 +1,13 @@
+<Project Sdk="Godot.NET.Sdk/4.6.1">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'android' ">net9.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <Nullable>enable</Nullable>
+    <RootNamespace>MemoryGame</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- The test project has its own csproj; keep its sources out of the game assembly. -->
+    <Compile Remove="Tests/**" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="200" viewBox="0 0 480 200">
+  <!-- PLACEHOLDER 480x200: replace with final art at the same path. -->
+  <rect x="2" y="2" width="476" height="196" fill="#2c3446" stroke="#ff3cac" stroke-width="4"/>
+  <path d="M2 2L478 198M478 2L2 198" stroke="#ff3cac" stroke-opacity="0.5" stroke-width="3"/>
+</svg>

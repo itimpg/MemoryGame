@@ -1,0 +1,40 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scenes/Screens/MainMenuScreen.cs" id="1_menu"]
+[ext_resource type="Texture2D" path="res://Art/UI/logo.svg" id="2_logo"]
+
+[node name="MainMenuScreen" type="VBoxContainer"]
+theme_override_constants/separation = 28
+alignment = 1
+script = ExtResource("1_menu")
+
+[node name="Logo" type="TextureRect" parent="."]
+custom_minimum_size = Vector2(480, 200)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("2_logo")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="RulesLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Buttons" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 20
+
+[node name="StartButton" type="Button" parent="Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(440, 100)
+layout_mode = 2
+text = "Start"
+
+[node name="HighScoresButton" type="Button" parent="Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(440, 100)
+layout_mode = 2
+text = "High Scores"

@@ -1,0 +1,66 @@
+[gd_scene format=3 uid="uid://d4ix5g3slwv35"]
+
+[ext_resource type="Script" uid="uid://d33alscuppg1l" path="res://Scenes/Main.cs" id="1_jjgbg"]
+[ext_resource type="PackedScene" path="res://Scenes/Screens/main_menu_screen.tscn" id="2_menu"]
+[ext_resource type="PackedScene" path="res://Scenes/Screens/game_screen.tscn" id="3_game"]
+[ext_resource type="PackedScene" path="res://Scenes/Screens/game_over_screen.tscn" id="4_over"]
+[ext_resource type="PackedScene" path="res://Scenes/Screens/high_scores_screen.tscn" id="5_scores"]
+[ext_resource type="PackedScene" path="res://Scenes/Components/pause_menu.tscn" id="6_pause"]
+[ext_resource type="Texture2D" path="res://Art/background.svg" id="7_bg"]
+
+[node name="Main" type="Control" unique_id=406423967]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_jjgbg")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("7_bg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="SafeArea" type="MarginContainer" parent="." unique_id=1718660325]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 56
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 48
+
+[node name="MainMenuScreen" parent="SafeArea" unique_id=179127214 instance=ExtResource("2_menu")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="GameScreen" parent="SafeArea" unique_id=770696735 instance=ExtResource("3_game")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="GameOverScreen" parent="SafeArea" unique_id=1110313105 instance=ExtResource("4_over")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="HighScoresScreen" parent="SafeArea" unique_id=1616425488 instance=ExtResource("5_scores")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="PauseMenu" parent="." unique_id=474828939 instance=ExtResource("6_pause")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
