@@ -1,17 +1,17 @@
-[gd_resource type="Theme" format=3]
+[gd_resource type="Theme" format=3 uid="uid://pwh6b7ahr8h"]
 
-[ext_resource type="Texture2D" path="res://Art/UI/button_normal.svg" id="1_normal"]
-[ext_resource type="Texture2D" path="res://Art/UI/button_hover.svg" id="2_hover"]
-[ext_resource type="Texture2D" path="res://Art/UI/button_pressed.svg" id="3_pressed"]
-[ext_resource type="Texture2D" path="res://Art/UI/button_disabled.svg" id="4_disabled"]
-[ext_resource type="Texture2D" path="res://Art/UI/panel.svg" id="5_panel"]
+[ext_resource type="Texture2D" uid="uid://b6hqrouadvarc" path="res://Art/UI/button_normal.svg" id="1_normal"]
+[ext_resource type="Texture2D" uid="uid://d3yuxm0b654md" path="res://Art/UI/button_hover.svg" id="2_hover"]
+[ext_resource type="Texture2D" uid="uid://hghcyl7jccmo" path="res://Art/UI/button_pressed.svg" id="3_pressed"]
+[ext_resource type="Texture2D" uid="uid://37g5mmpih0uw" path="res://Art/UI/button_disabled.svg" id="4_disabled"]
+[ext_resource type="Texture2D" uid="uid://dpv1ibixm2tgy" path="res://Art/UI/panel.svg" id="5_panel"]
 
-[sub_resource type="StyleBoxTexture" id="StyleBox_button_normal"]
+[sub_resource type="StyleBoxTexture" id="StyleBox_button_disabled"]
 content_margin_left = 16.0
 content_margin_top = 12.0
 content_margin_right = 16.0
 content_margin_bottom = 12.0
-texture = ExtResource("1_normal")
+texture = ExtResource("4_disabled")
 texture_margin_left = 24.0
 texture_margin_top = 24.0
 texture_margin_right = 24.0
@@ -28,23 +28,23 @@ texture_margin_top = 24.0
 texture_margin_right = 24.0
 texture_margin_bottom = 24.0
 
+[sub_resource type="StyleBoxTexture" id="StyleBox_button_normal"]
+content_margin_left = 16.0
+content_margin_top = 12.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
+texture = ExtResource("1_normal")
+texture_margin_left = 24.0
+texture_margin_top = 24.0
+texture_margin_right = 24.0
+texture_margin_bottom = 24.0
+
 [sub_resource type="StyleBoxTexture" id="StyleBox_button_pressed"]
 content_margin_left = 16.0
 content_margin_top = 12.0
 content_margin_right = 16.0
 content_margin_bottom = 12.0
 texture = ExtResource("3_pressed")
-texture_margin_left = 24.0
-texture_margin_top = 24.0
-texture_margin_right = 24.0
-texture_margin_bottom = 24.0
-
-[sub_resource type="StyleBoxTexture" id="StyleBox_button_disabled"]
-content_margin_left = 16.0
-content_margin_top = 12.0
-content_margin_right = 16.0
-content_margin_bottom = 12.0
-texture = ExtResource("4_disabled")
 texture_margin_left = 24.0
 texture_margin_top = 24.0
 texture_margin_right = 24.0
@@ -68,16 +68,34 @@ Button/styles/disabled = SubResource("StyleBox_button_disabled")
 Button/styles/hover = SubResource("StyleBox_button_hover")
 Button/styles/normal = SubResource("StyleBox_button_normal")
 Button/styles/pressed = SubResource("StyleBox_button_pressed")
-Label/font_sizes/font_size = 32
-PanelContainer/styles/panel = SubResource("StyleBox_panel")
+DamageLabel/base_type = &"Label"
+DamageLabel/colors/font_color = Color(1, 0.9, 0.3, 1)
+DamageLabel/colors/font_outline_color = Color(0, 0, 0, 1)
+DamageLabel/constants/outline_size = 10
+DamageLabel/font_sizes/font_size = 56
 HeadingLabel/base_type = &"Label"
 HeadingLabel/font_sizes/font_size = 96
+HealthBarLabel/base_type = &"Label"
+HealthBarLabel/colors/font_outline_color = Color(0, 0, 0, 1)
+HealthBarLabel/constants/outline_size = 8
+HealthBarLabel/font_sizes/font_size = 26
 HudLabel/base_type = &"Label"
 HudLabel/font_sizes/font_size = 36
 KeypadButton/base_type = &"Button"
 KeypadButton/font_sizes/font_size = 48
+Label/font_sizes/font_size = 32
+PanelContainer/styles/panel = SubResource("StyleBox_panel")
+StreakLabel/base_type = &"Label"
+StreakLabel/colors/font_color = Color(1, 0.8, 0.3, 1)
+StreakLabel/colors/font_outline_color = Color(0, 0, 0, 1)
+StreakLabel/constants/outline_size = 8
+StreakLabel/font_sizes/font_size = 28
 TableHeaderLabel/base_type = &"Label"
 TableHeaderLabel/colors/font_color = Color(1, 0.85, 0.4, 1)
 TableHeaderLabel/font_sizes/font_size = 26
 TableLabel/base_type = &"Label"
 TableLabel/font_sizes/font_size = 26
+UpgradeButton/base_type = &"Button"
+UpgradeButton/constants/h_separation = 20
+UpgradeButton/constants/icon_max_width = 88
+UpgradeButton/font_sizes/font_size = 28

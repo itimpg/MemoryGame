@@ -1,13 +1,13 @@
-using System;
 using Godot;
 using MemoryGame.Core;
 
 namespace MemoryGame.UI;
 
+/// <summary>Shows one <see cref="Battle"/>: the monster, its health, the number to remember and the keypad.</summary>
 public partial class GameScreen : VBoxContainer
 {
 	[Signal]
-	public delegate void GameFinishedEventHandler(int score, int correct, int attempts, float totalCorrectAnswerTime);
+	public delegate void BattleEndedEventHandler(bool won);
 
 	[Signal]
 	public delegate void PauseRequestedEventHandler();
@@ -15,13 +15,21 @@ public partial class GameScreen : VBoxContainer
 	private static readonly Color CorrectColor = new(0.4f, 1f, 0.5f);
 	private static readonly Color WrongColor = new(1f, 0.45f, 0.45f);
 	private static readonly Color PlaceholderColor = new(1f, 1f, 1f, 0.35f);
+	private static readonly Color HitFlashColor = new(1f, 0.3f, 0.3f);
 
-	private readonly GameRules _rules = GameRules.Default;
-	private readonly Random _rng = new();
-	private GameSession? _session;
+	private Battle? _battle;
+	private Tween? _spriteTween;
+	private Tween? _flashTween;
+	private Tween? _defeatTween;
+	private Tween? _healthTween;
 
+	private Label _stageLabel = null!;
 	private Label _timeLabel = null!;
-	private Label _scoreLabel = null!;
+	private Label _streakLabel = null!;
+	private Label _healthLabel = null!;
+	private ProgressBar _healthBar = null!;
+	private Control _monsterStage = null!;
+	private TextureRect _monsterSprite = null!;
 	private Label _numberLabel = null!;
 	private Label _messageLabel = null!;
 	private ProgressBar _showBar = null!;
@@ -29,36 +37,51 @@ public partial class GameScreen : VBoxContainer
 
 	public override void _Ready()
 	{
+		_stageLabel = GetNode<Label>("%StageLabel");
 		_timeLabel = GetNode<Label>("%TimeLabel");
-		_scoreLabel = GetNode<Label>("%ScoreLabel");
+		_streakLabel = GetNode<Label>("%StreakLabel");
+		_healthLabel = GetNode<Label>("%HealthLabel");
+		_healthBar = GetNode<ProgressBar>("%HealthBar");
+		_monsterStage = GetNode<Control>("%MonsterStage");
+		_monsterSprite = GetNode<TextureRect>("%MonsterSprite");
 		_numberLabel = GetNode<Label>("%NumberLabel");
 		_messageLabel = GetNode<Label>("%MessageLabel");
 		_showBar = GetNode<ProgressBar>("%ShowBar");
 		_keypad = GetNode<Keypad>("%Keypad");
 
-		_showBar.MaxValue = _rules.ShowDuration;
 		_keypad.DigitPressed += OnDigitPressed;
 		GetNode<Button>("%PauseButton").Pressed += RequestPause;
 		SetProcess(false);
 	}
 
-	public bool IsPlaying => _session is not null;
+	public bool IsPlaying => _battle is not null;
 
-	public void StartGame()
+	public void StartBattle(Battle battle, int stage)
 	{
-		_session = new GameSession(_rules, _rng);
-		_session.PhaseChanged += OnPhaseChanged;
-		_session.AnswerChecked += OnAnswerChecked;
-		_session.Start();
+		_battle = battle;
+		_battle.PhaseChanged += OnPhaseChanged;
+		_battle.AnswerChecked += OnAnswerChecked;
+
+		_stageLabel.Text = $"Stage {stage}";
+		_healthTween?.Kill();
+		_healthBar.MaxValue = battle.Monster.MaxHealth;
+		_healthBar.Value = battle.Monster.Health;
+		UpdateHealthLabel();
+		_monsterSprite.Texture = ArtLoader.MonsterTexture(battle.Monster.Id);
+		ResetMonsterSprite();
+		_showBar.MaxValue = battle.ShowDuration;
+		UpdateStreakLabel(battle);
+
+		battle.Start();
 		UpdateHud();
 		SetProcess(true);
 	}
 
-	/// <summary>Ends the current game without reporting a result.</summary>
+	/// <summary>Ends the current battle without reporting a result.</summary>
 	public void Abandon()
 	{
 		SetProcess(false);
-		_session = null;
+		_battle = null;
 	}
 
 	public override void _Notification(int what)
@@ -76,15 +99,13 @@ public partial class GameScreen : VBoxContainer
 
 	public override void _Process(double delta)
 	{
-		if (_session is null)
+		if (_battle is null)
 			return;
 
-		_session.Tick((float)delta);
-		if (_session is null) // The game just finished.
-			return;
+		_battle.Tick((float)delta);
 		UpdateHud();
-		if (_session.Phase == RoundPhase.Showing)
-			_showBar.Value = _rules.ShowDuration - _session.PhaseElapsed;
+		if (_battle.Phase == BattlePhase.Showing)
+			_showBar.Value = _battle.ShowDuration - _battle.PhaseElapsed;
 	}
 
 	public override void _UnhandledInput(InputEvent @event)
@@ -97,7 +118,7 @@ public partial class GameScreen : VBoxContainer
 		}
 
 		// Physical keyboard support for desktop testing.
-		if (_session?.Phase != RoundPhase.Input || @event is not InputEventKey { Pressed: true, Echo: false } key)
+		if (_battle?.Phase != BattlePhase.Input || @event is not InputEventKey { Pressed: true, Echo: false } key)
 			return;
 
 		if (key.Keycode is >= Key.Key0 and <= Key.Key9)
@@ -111,38 +132,60 @@ public partial class GameScreen : VBoxContainer
 
 	private void OnDigitPressed(int digit)
 	{
-		if (_session is null)
+		if (_battle is null)
 			return;
-		_session.EnterDigit(digit);
+		_battle.EnterDigit(digit);
 		// Once the last digit is in, OnAnswerChecked has already shown the result.
-		if (_session.Phase == RoundPhase.Input)
-			ShowEntered();
+		if (_battle.Phase == BattlePhase.Input)
+			ShowEntered(_battle);
 	}
 
-	private void OnPhaseChanged(RoundPhase phase)
+	private void OnPhaseChanged(BattlePhase phase)
 	{
+		var battle = _battle!;
 		switch (phase)
 		{
-			case RoundPhase.Showing:
-				SetText(_numberLabel, _session!.CurrentNumber);
+			case BattlePhase.Showing:
+				SetText(_numberLabel, battle.CurrentNumber);
 				SetText(_messageLabel, "Remember this!");
-				_showBar.Value = _rules.ShowDuration;
-				_showBar.Show();
+				_showBar.Value = battle.ShowDuration;
+				SetShowBarVisible(true);
 				_keypad.SetEnabled(false);
 				break;
-			case RoundPhase.Input:
+			case BattlePhase.Input:
 				SetText(_messageLabel, "Enter the number");
-				_showBar.Hide();
-				ShowEntered();
+				SetShowBarVisible(false);
+				ShowEntered(battle);
 				_keypad.SetEnabled(true);
 				break;
-			case RoundPhase.Finished:
-				SetProcess(false);
-				var result = _session!.Result;
-				_session = null;
-				EmitSignal(SignalName.GameFinished, result.Score, result.Correct, result.Attempts, result.TotalCorrectAnswerTime);
+			case BattlePhase.Won:
+			case BattlePhase.Lost:
+				FinishBattle(battle, won: phase == BattlePhase.Won);
 				break;
 		}
+	}
+
+	private async void FinishBattle(Battle battle, bool won)
+	{
+		SetProcess(false);
+		_keypad.SetEnabled(false);
+		SetShowBarVisible(false);
+
+		if (won)
+		{
+			SetText(_messageLabel, $"{battle.Monster.Name} defeated!", CorrectColor);
+			await ToSignal(PlayDefeatAnimation(), Tween.SignalName.Finished);
+		}
+		else
+		{
+			SetText(_messageLabel, "Time's up!", WrongColor);
+			await ToSignal(GetTree().CreateTimer(0.8, processAlways: false), Timer.SignalName.Timeout);
+		}
+
+		if (_battle != battle) // Abandoned from the pause menu meanwhile.
+			return;
+		_battle = null;
+		EmitSignal(SignalName.BattleEnded, won);
 	}
 
 	private void OnAnswerChecked(AnswerResult answer)
@@ -152,30 +195,145 @@ public partial class GameScreen : VBoxContainer
 
 		string levelText = answer.DigitChange switch
 		{
-			> 0 => $"\nLevel up! {answer.Digits} digits",
-			< 0 => $"\nLevel down: {answer.Digits} digits",
+			> 0 => $"\nLevel up! {answer.NumberLength} digits",
+			< 0 => $"\nLevel down: {answer.NumberLength} digits",
 			_ => "",
 		};
+
 		if (answer.IsCorrect)
-			SetText(_messageLabel, $"Correct! +{answer.Points}  ({answer.AnswerTime:0.00}s){levelText}", CorrectColor);
+		{
+			string bonus = answer.DamageMultiplier > 1.001f ? $" (x{answer.DamageMultiplier:0.##})" : "";
+			SetText(_messageLabel, $"Hit! {answer.Damage} damage{bonus}  {answer.AnswerTime:0.00}s{levelText}", CorrectColor);
+			PlayHit(answer.Damage);
+		}
+		else if (answer.MistakeForgiven)
+		{
+			SetText(_messageLabel, $"Wrong — you entered {answer.Entered}\nSecond Chance: no time lost{levelText}", WrongColor);
+			ShowPopup("Blocked!", CorrectColor);
+		}
 		else
-			SetText(_messageLabel, $"Wrong — you entered {answer.Entered}{levelText}", WrongColor);
+		{
+			string monster = _battle!.Monster.Name;
+			SetText(_messageLabel, $"Wrong — you entered {answer.Entered}\nThe {monster} strikes! -{answer.TimePenalty:0}s{levelText}", WrongColor);
+			PlayMonsterAttack(answer.TimePenalty);
+		}
+
+		UpdateStreakLabel(_battle!);
+		if (answer.IsCorrect)
+			PulseStreakLabel();
+	}
+
+	/// <summary>Shows progress toward the next digit, e.g. "Streak 3/4 (next: 5 digits)".</summary>
+	private void UpdateStreakLabel(Battle battle)
+	{
+		_streakLabel.Text = battle.IsAtMaxDigits
+			? $"Max {battle.NumberLength} digits"
+			: $"Streak {battle.CorrectStreak}/{battle.CorrectStreakNeeded} (next: {battle.NumberLength + 1} digits)";
+	}
+
+	private void PulseStreakLabel()
+	{
+		_streakLabel.PivotOffset = _streakLabel.Size / 2;
+		var tween = _streakLabel.CreateTween();
+		tween.TweenProperty(_streakLabel, "scale", new Vector2(1.25f, 1.25f), 0.08);
+		tween.TweenProperty(_streakLabel, "scale", Vector2.One, 0.15);
+	}
+
+	// Fades instead of hiding so the layout (and the monster's size) doesn't jump between phases.
+	private void SetShowBarVisible(bool visible) =>
+		_showBar.Modulate = visible ? Colors.White : Colors.Transparent;
+
+	private void PlayHit(int damage)
+	{
+		ShowPopup($"{damage}");
+
+		ResetMonsterSprite();
+		_monsterSprite.Modulate = HitFlashColor;
+		_flashTween = CreateTween();
+		_flashTween.TweenProperty(_monsterSprite, "modulate", Colors.White, 0.25);
+		_spriteTween = CreateTween();
+		foreach (float x in new[] { 14f, -12f, 8f, -4f, 0f })
+			_spriteTween.TweenProperty(_monsterSprite, "position:x", x, 0.04);
+
+		var monster = _battle!.Monster;
+		UpdateHealthLabel();
+		_healthTween?.Kill();
+		_healthTween = CreateTween();
+		_healthTween.TweenProperty(_healthBar, "value", (double)monster.Health, 0.3)
+			.SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Cubic);
+	}
+
+	private void PlayMonsterAttack(float timePenalty)
+	{
+		ShowPopup($"-{timePenalty:0}s", WrongColor);
+
+		ResetMonsterSprite();
+		_monsterSprite.PivotOffset = _monsterSprite.Size / 2;
+		_spriteTween = CreateTween();
+		_spriteTween.TweenProperty(_monsterSprite, "scale", new Vector2(1.2f, 1.2f), 0.1);
+		_spriteTween.TweenProperty(_monsterSprite, "scale", Vector2.One, 0.15);
+
+		_timeLabel.AddThemeColorOverride("font_color", WrongColor);
+		GetTree().CreateTimer(0.5, processAlways: false).Timeout += () => _timeLabel.RemoveThemeColorOverride("font_color");
+	}
+
+	private Tween PlayDefeatAnimation()
+	{
+		// Let the killing blow's flash and shake (0.25s) finish first.
+		_monsterSprite.PivotOffset = _monsterSprite.Size / 2;
+		_defeatTween = CreateTween();
+		_defeatTween.TweenInterval(0.3);
+		_defeatTween.TweenProperty(_monsterSprite, "modulate:a", 0f, 0.6);
+		_defeatTween.Parallel().TweenProperty(_monsterSprite, "scale", new Vector2(0.3f, 0.3f), 0.6)
+			.SetEase(Tween.EaseType.In).SetTrans(Tween.TransitionType.Back);
+		return _defeatTween;
+	}
+
+	/// <summary>Stops any running sprite effect and puts the monster back to normal.</summary>
+	private void ResetMonsterSprite()
+	{
+		_spriteTween?.Kill();
+		_flashTween?.Kill();
+		_defeatTween?.Kill();
+		_monsterSprite.Modulate = Colors.White;
+		_monsterSprite.Scale = Vector2.One;
+		_monsterSprite.Position = Vector2.Zero;
+	}
+
+	/// <summary>A number that floats up from the monster and fades out.</summary>
+	private void ShowPopup(string text, Color? color = null)
+	{
+		var label = new Label { Text = text, ThemeTypeVariation = "DamageLabel" };
+		if (color is { } c)
+			label.AddThemeColorOverride("font_color", c);
+		_monsterStage.AddChild(label);
+
+		var start = new Vector2((_monsterStage.Size.X - label.GetMinimumSize().X) / 2, _monsterStage.Size.Y * 0.3f);
+		label.Position = start;
+
+		var tween = label.CreateTween().SetParallel();
+		tween.TweenProperty(label, "position:y", start.Y - 90f, 0.8).SetEase(Tween.EaseType.Out);
+		tween.TweenProperty(label, "modulate:a", 0f, 0.5).SetDelay(0.3);
+		tween.Chain().TweenCallback(Callable.From(label.QueueFree));
 	}
 
 	/// <summary>Shows what the player has entered so far, with underscores for the remaining digits.</summary>
-	private void ShowEntered()
+	private void ShowEntered(Battle battle)
 	{
-		var session = _session!;
-		string text = session.Entered.PadRight(session.CurrentNumber.Length, '_');
-		SetText(_numberLabel, text, session.Entered.Length == 0 ? PlaceholderColor : null);
+		string text = battle.Entered.PadRight(battle.CurrentNumber.Length, '_');
+		SetText(_numberLabel, text, battle.Entered.Length == 0 ? PlaceholderColor : null);
 	}
 
 	private void UpdateHud()
 	{
-		if (_session is null)
-			return;
-		_timeLabel.Text = $"Time: {Mathf.CeilToInt(_session.TimeLeft)}s";
-		_scoreLabel.Text = $"Score: {_session.Score}";
+		if (_battle is not null)
+			_timeLabel.Text = $"{Mathf.CeilToInt(_battle.TimeLeft)}s";
+	}
+
+	private void UpdateHealthLabel()
+	{
+		var monster = _battle!.Monster;
+		_healthLabel.Text = $"{monster.Name}   {monster.Health} / {monster.MaxHealth} HP";
 	}
 
 	private static void SetText(Label label, string text, Color? color = null)

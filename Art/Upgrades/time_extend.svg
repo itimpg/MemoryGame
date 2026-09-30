@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 128 128">
+  <!-- PLACEHOLDER icon time_extend (256x256): replace with final art at the same path (.png/.webp also work). -->
+  <rect x="2" y="2" width="124" height="124" rx="20" fill="#1c1f28" stroke="#ff3cac" stroke-width="4"/>
+  <g fill="#42a5f5" stroke="#42a5f5">
+    <circle cx="64" cy="64" r="44" fill="none" stroke-width="10"/>
+    <path d="M64 36 L64 64 L84 76" fill="none" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="768" height="768" viewBox="0 0 256 256">
+  <!-- FALLBACK PLACEHOLDER (768x768): shown for a monster that has no art of its own. -->
+  <rect x="2" y="2" width="252" height="252" fill="#2f2438" stroke="#ff3cac" stroke-width="4"/>
+  <path d="M2 2L254 254M254 2L2 254" stroke="#ff3cac" stroke-opacity="0.35" stroke-width="3"/>
+  <circle cx="90" cy="110" r="18" fill="#ff3cac"/>
+  <circle cx="166" cy="110" r="18" fill="#ff3cac"/>
+</svg>

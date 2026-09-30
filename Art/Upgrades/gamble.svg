@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 128 128">
+  <!-- PLACEHOLDER icon gamble (256x256): replace with final art at the same path (.png/.webp also work). -->
+  <rect x="2" y="2" width="124" height="124" rx="20" fill="#1c1f28" stroke="#ff3cac" stroke-width="4"/>
+  <g fill="#ab47bc" stroke="#ab47bc">
+    <rect x="26" y="26" width="76" height="76" rx="14" stroke="none"/>
+    <circle cx="46" cy="46" r="8" fill="#1c1f28" stroke="none"/>
+    <circle cx="64" cy="64" r="8" fill="#1c1f28" stroke="none"/>
+    <circle cx="82" cy="82" r="8" fill="#1c1f28" stroke="none"/>
+  </g>
+</svg>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 128 128">
+  <!-- PLACEHOLDER icon slow_time (256x256): replace with final art at the same path (.png/.webp also work). -->
+  <rect x="2" y="2" width="124" height="124" rx="20" fill="#1c1f28" stroke="#ff3cac" stroke-width="4"/>
+  <g fill="#4dd0e1" stroke="#4dd0e1">
+    <path d="M34 18 L94 18 L64 64 Z M64 64 L94 110 L34 110 Z" stroke="none"/>
+    <rect x="28" y="12" width="72" height="8" rx="3" stroke="none"/>
+    <rect x="28" y="108" width="72" height="8" rx="3" stroke="none"/>
+  </g>
+</svg>

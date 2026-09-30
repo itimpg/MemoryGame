@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="768" height="768" viewBox="0 0 256 256">
+  <!-- PLACEHOLDER golem (768x768): replace with final art at the same path (.png/.webp also work). -->
+  <rect x="2" y="2" width="252" height="252" fill="#1c1f28" stroke="#ff3cac" stroke-width="4"/>
+  <g fill="#8d8d8d">
+    <rect x="70" y="60" width="116" height="90" rx="4"/>
+    <rect x="50" y="150" width="156" height="70" rx="4"/>
+    <rect x="30" y="140" width="30" height="60"/>
+    <rect x="196" y="140" width="30" height="60"/>
+  </g>
+  <circle cx="104" cy="120" r="10" fill="#1c1f28"/>
+  <circle cx="152" cy="120" r="10" fill="#1c1f28"/>
+</svg>

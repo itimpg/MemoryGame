@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 128 128">
+  <!-- PLACEHOLDER icon second_chance (256x256): replace with final art at the same path (.png/.webp also work). -->
+  <rect x="2" y="2" width="124" height="124" rx="20" fill="#1c1f28" stroke="#ff3cac" stroke-width="4"/>
+  <g fill="#66bb6a" stroke="#66bb6a">
+    <path d="M64 16 L104 30 L104 62 Q104 96 64 114 Q24 96 24 62 L24 30 Z" stroke="none"/>
+  </g>
+</svg>

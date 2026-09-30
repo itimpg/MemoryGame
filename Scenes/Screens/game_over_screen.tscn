@@ -10,7 +10,7 @@ script = ExtResource("1_over")
 [node name="Title" type="Label" parent="." unique_id=866631407]
 layout_mode = 2
 theme_type_variation = &"HeadingLabel"
-text = "Time's up!"
+text = "Game Over"
 horizontal_alignment = 1
 
 [node name="SummaryLabel" type="Label" parent="." unique_id=1440611905]

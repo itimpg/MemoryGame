@@ -3,10 +3,11 @@
 [ext_resource type="Script" uid="uid://d33alscuppg1l" path="res://Scenes/Main.cs" id="1_jjgbg"]
 [ext_resource type="PackedScene" path="res://Scenes/Screens/main_menu_screen.tscn" id="2_menu"]
 [ext_resource type="PackedScene" path="res://Scenes/Screens/game_screen.tscn" id="3_game"]
-[ext_resource type="PackedScene" path="res://Scenes/Screens/game_over_screen.tscn" id="4_over"]
-[ext_resource type="PackedScene" path="res://Scenes/Screens/high_scores_screen.tscn" id="5_scores"]
+[ext_resource type="PackedScene" uid="uid://b6dei3cf4swi5" path="res://Scenes/Screens/game_over_screen.tscn" id="4_over"]
+[ext_resource type="PackedScene" path="res://Scenes/Screens/best_runs_screen.tscn" id="5_scores"]
 [ext_resource type="PackedScene" path="res://Scenes/Components/pause_menu.tscn" id="6_pause"]
-[ext_resource type="Texture2D" path="res://Art/background.svg" id="7_bg"]
+[ext_resource type="Texture2D" uid="uid://c80b2nu7wp1lx" path="res://Art/background.svg" id="7_bg"]
+[ext_resource type="PackedScene" path="res://Scenes/Screens/stage_clear_screen.tscn" id="8_clear"]
 
 [node name="Main" type="Control" unique_id=406423967]
 layout_mode = 3
@@ -17,7 +18,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_jjgbg")
 
-[node name="Background" type="TextureRect" parent="."]
+[node name="Background" type="TextureRect" parent="." unique_id=296734393]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -50,12 +51,17 @@ unique_name_in_owner = true
 visible = false
 layout_mode = 2
 
+[node name="StageClearScreen" parent="SafeArea" unique_id=158024825 instance=ExtResource("8_clear")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
 [node name="GameOverScreen" parent="SafeArea" unique_id=1110313105 instance=ExtResource("4_over")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 
-[node name="HighScoresScreen" parent="SafeArea" unique_id=1616425488 instance=ExtResource("5_scores")]
+[node name="BestRunsScreen" parent="SafeArea" unique_id=1616425488 instance=ExtResource("5_scores")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2

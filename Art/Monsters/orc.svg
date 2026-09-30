@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="768" height="768" viewBox="0 0 256 256">
+  <!-- PLACEHOLDER orc (768x768): replace with final art at the same path (.png/.webp also work). -->
+  <rect x="2" y="2" width="252" height="252" fill="#1c1f28" stroke="#ff3cac" stroke-width="4"/>
+  <g fill="#558b2f">
+    <rect x="60" y="60" width="136" height="150" rx="16"/>
+    <path d="M98 170 L106 150 L114 170 Z M142 170 L150 150 L158 170 Z" fill="#fff"/>
+  </g>
+  <circle cx="104" cy="120" r="10" fill="#1c1f28"/>
+  <circle cx="152" cy="120" r="10" fill="#1c1f28"/>
+</svg>

@@ -1,8 +1,8 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://Scenes/Screens/HighScoresScreen.cs" id="1_scores"]
+[ext_resource type="Script" path="res://Scenes/Screens/BestRunsScreen.cs" id="1_scores"]
 
-[node name="HighScoresScreen" type="VBoxContainer"]
+[node name="BestRunsScreen" type="VBoxContainer"]
 theme_override_constants/separation = 28
 alignment = 1
 script = ExtResource("1_scores")
@@ -10,13 +10,13 @@ script = ExtResource("1_scores")
 [node name="Title" type="Label" parent="."]
 layout_mode = 2
 theme_type_variation = &"HeadingLabel"
-text = "High Scores"
+text = "Best Runs"
 horizontal_alignment = 1
 
 [node name="EmptyLabel" type="Label" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
-text = "No scores yet — play a game!"
+text = "No runs yet — go fight some monsters!"
 horizontal_alignment = 1
 autowrap_mode = 3
 

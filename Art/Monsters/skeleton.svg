@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="768" height="768" viewBox="0 0 256 256">
+  <!-- PLACEHOLDER skeleton (768x768): replace with final art at the same path (.png/.webp also work). -->
+  <rect x="2" y="2" width="252" height="252" fill="#1c1f28" stroke="#ff3cac" stroke-width="4"/>
+  <g fill="#e0e0e0">
+    <circle cx="128" cy="115" r="60"/>
+    <rect x="98" y="160" width="60" height="40" rx="6"/>
+    <rect x="120" y="200" width="16" height="40"/>
+  </g>
+  <circle cx="104" cy="120" r="10" fill="#1c1f28"/>
+  <circle cx="152" cy="120" r="10" fill="#1c1f28"/>
+</svg>

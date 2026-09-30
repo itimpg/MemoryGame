@@ -20,21 +20,25 @@ public partial class GameOverScreen : VBoxContainer
 		GetNode<Button>("%MenuButton").Pressed += () => EmitSignal(SignalName.MenuRequested);
 	}
 
-	/// <param name="rank">1-based high score rank, or null if the score didn't make the table.</param>
-	public void Display(GameResult result, int? rank)
+	/// <param name="rank">1-based best run rank, or null if the run didn't make the table.</param>
+	public void Display(Run run, int? rank)
 	{
 		string rankText = rank switch
 		{
-			1 => "NEW HIGH SCORE!\n\n",
-			{ } r => $"You placed #{r} on the high scores!\n\n",
+			1 => "NEW BEST RUN!\n\n",
+			{ } r => $"That's your #{r} best run!\n\n",
 			null => "",
 		};
-		string average = result.AverageAnswerTime is { } avg ? $"{avg:0.00}s" : "—";
+		var stats = run.Stats;
+		string average = stats.AverageAnswerTime is { } avg ? $"{avg:0.00}s" : "—";
 
 		_summaryLabel.Text =
 			rankText +
-			$"Final score: {result.Score}\n" +
-			$"Correct: {result.Correct} / {result.Attempts}\n" +
-			$"Average answer time: {average}";
+			$"Reached stage {run.Stage}\n" +
+			$"Monsters defeated: {stats.StagesCleared}\n" +
+			$"Total damage: {stats.TotalDamage}\n" +
+			$"Correct: {stats.Correct} / {stats.Attempts}\n" +
+			$"Average answer time: {average}\n" +
+			$"Upgrades: {UpgradeText.Summary(run.Upgrades)}";
 	}
 }

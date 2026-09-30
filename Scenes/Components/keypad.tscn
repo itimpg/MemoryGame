@@ -9,75 +9,75 @@ columns = 3
 script = ExtResource("1_keypad")
 
 [node name="Key1" type="Button" parent="."]
-custom_minimum_size = Vector2(200, 110)
+custom_minimum_size = Vector2(200, 88)
 layout_mode = 2
 focus_mode = 0
 theme_type_variation = &"KeypadButton"
 text = "1"
 
 [node name="Key2" type="Button" parent="."]
-custom_minimum_size = Vector2(200, 110)
+custom_minimum_size = Vector2(200, 88)
 layout_mode = 2
 focus_mode = 0
 theme_type_variation = &"KeypadButton"
 text = "2"
 
 [node name="Key3" type="Button" parent="."]
-custom_minimum_size = Vector2(200, 110)
+custom_minimum_size = Vector2(200, 88)
 layout_mode = 2
 focus_mode = 0
 theme_type_variation = &"KeypadButton"
 text = "3"
 
 [node name="Key4" type="Button" parent="."]
-custom_minimum_size = Vector2(200, 110)
+custom_minimum_size = Vector2(200, 88)
 layout_mode = 2
 focus_mode = 0
 theme_type_variation = &"KeypadButton"
 text = "4"
 
 [node name="Key5" type="Button" parent="."]
-custom_minimum_size = Vector2(200, 110)
+custom_minimum_size = Vector2(200, 88)
 layout_mode = 2
 focus_mode = 0
 theme_type_variation = &"KeypadButton"
 text = "5"
 
 [node name="Key6" type="Button" parent="."]
-custom_minimum_size = Vector2(200, 110)
+custom_minimum_size = Vector2(200, 88)
 layout_mode = 2
 focus_mode = 0
 theme_type_variation = &"KeypadButton"
 text = "6"
 
 [node name="Key7" type="Button" parent="."]
-custom_minimum_size = Vector2(200, 110)
+custom_minimum_size = Vector2(200, 88)
 layout_mode = 2
 focus_mode = 0
 theme_type_variation = &"KeypadButton"
 text = "7"
 
 [node name="Key8" type="Button" parent="."]
-custom_minimum_size = Vector2(200, 110)
+custom_minimum_size = Vector2(200, 88)
 layout_mode = 2
 focus_mode = 0
 theme_type_variation = &"KeypadButton"
 text = "8"
 
 [node name="Key9" type="Button" parent="."]
-custom_minimum_size = Vector2(200, 110)
+custom_minimum_size = Vector2(200, 88)
 layout_mode = 2
 focus_mode = 0
 theme_type_variation = &"KeypadButton"
 text = "9"
 
 [node name="Spacer" type="Control" parent="."]
-custom_minimum_size = Vector2(200, 110)
+custom_minimum_size = Vector2(200, 88)
 layout_mode = 2
 mouse_filter = 2
 
 [node name="Key0" type="Button" parent="."]
-custom_minimum_size = Vector2(200, 110)
+custom_minimum_size = Vector2(200, 88)
 layout_mode = 2
 focus_mode = 0
 theme_type_variation = &"KeypadButton"

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 128 128">
+  <!-- FALLBACK PLACEHOLDER icon (256x256): shown for an upgrade that has no icon of its own. -->
+  <rect x="2" y="2" width="124" height="124" rx="20" fill="#2f2438" stroke="#ff3cac" stroke-width="4"/>
+  <path d="M2 2L126 126M126 2L2 126" stroke="#ff3cac" stroke-opacity="0.35" stroke-width="3"/>
+</svg>

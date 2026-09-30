@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 128 128">
+  <!-- PLACEHOLDER icon power (256x256): replace with final art at the same path (.png/.webp also work). -->
+  <rect x="2" y="2" width="124" height="124" rx="20" fill="#1c1f28" stroke="#ff3cac" stroke-width="4"/>
+  <g fill="#ff7043" stroke="#ff7043">
+    <path d="M72 18 L34 70 L60 70 L52 110 L94 54 L66 54 Z" stroke="none"/>
+  </g>
+</svg>

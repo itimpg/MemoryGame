@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="768" height="768" viewBox="0 0 256 256">
+  <!-- PLACEHOLDER wraith (768x768): replace with final art at the same path (.png/.webp also work). -->
+  <rect x="2" y="2" width="252" height="252" fill="#1c1f28" stroke="#ff3cac" stroke-width="4"/>
+  <g fill="#7e57c2">
+    <path d="M128 50 Q200 60 200 150 L200 220 L176 196 L152 220 L128 196 L104 220 L80 196 L56 220 L56 150 Q56 60 128 50 Z"/>
+  </g>
+  <circle cx="104" cy="120" r="10" fill="#1c1f28"/>
+  <circle cx="152" cy="120" r="10" fill="#1c1f28"/>
+</svg>

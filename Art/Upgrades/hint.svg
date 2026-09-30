@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 128 128">
+  <!-- PLACEHOLDER icon hint (256x256): replace with final art at the same path (.png/.webp also work). -->
+  <rect x="2" y="2" width="124" height="124" rx="20" fill="#1c1f28" stroke="#ff3cac" stroke-width="4"/>
+  <g fill="#ffee58" stroke="#ffee58">
+    <circle cx="64" cy="54" r="30" stroke="none"/>
+    <rect x="50" y="82" width="28" height="22" rx="4" stroke="none"/>
+    <rect x="54" y="106" width="20" height="6" rx="3" stroke="none"/>
+  </g>
+</svg>

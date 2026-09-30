@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="768" height="768" viewBox="0 0 256 256">
+  <!-- PLACEHOLDER slime (768x768): replace with final art at the same path (.png/.webp also work). -->
+  <rect x="2" y="2" width="252" height="252" fill="#1c1f28" stroke="#ff3cac" stroke-width="4"/>
+  <g fill="#4caf50">
+    <path d="M40 210 Q40 90 128 70 Q216 90 216 210 Z"/>
+  </g>
+  <circle cx="104" cy="120" r="10" fill="#1c1f28"/>
+  <circle cx="152" cy="120" r="10" fill="#1c1f28"/>
+</svg>
