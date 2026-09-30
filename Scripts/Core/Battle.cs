@@ -29,6 +29,9 @@ public sealed class Battle
 		_upgrades = upgrades;
 		Monster = setup.Monster;
 		ShowDuration = setup.ShowDuration + upgrades.ExtraShowTime;
+		// Set up front so the full time can be shown before the clock starts (e.g. during a countdown).
+		TimeLeft = rules.StageDuration + upgrades.ExtraStageTime;
+		_freeMistakesLeft = upgrades.FreeMistakesPerStage;
 	}
 
 	public event Action<BattlePhase>? PhaseChanged;
@@ -59,8 +62,6 @@ public sealed class Battle
 	{
 		if (Phase != BattlePhase.NotStarted)
 			throw new InvalidOperationException("A battle can only be started once.");
-		TimeLeft = _rules.StageDuration + _upgrades.ExtraStageTime;
-		_freeMistakesLeft = _upgrades.FreeMistakesPerStage;
 		NextRound();
 	}
 

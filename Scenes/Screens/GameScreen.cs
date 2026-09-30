@@ -24,6 +24,8 @@ public partial class GameScreen : VBoxContainer
 	private Tween? _defeatTween;
 
 	private const int TimerWarningSeconds = 5;
+	private const int CountdownSeconds = 3;
+	private const int DefeatBlinks = 5;
 	private int _lastTickSecond;
 	private Tween? _healthTween;
 
@@ -76,10 +78,44 @@ public partial class GameScreen : VBoxContainer
 		_showBar.MaxValue = battle.ShowDuration;
 		UpdateStreakLabel(battle);
 		_lastTickSecond = int.MaxValue;
+		UpdateHud();
+
+		RunCountdown(battle);
+	}
+
+	/// <summary>"3, 2, 1, Fight!" before the clock starts. The battle only starts (and the time only runs) afterwards.</summary>
+	private async void RunCountdown(Battle battle)
+	{
+		_keypad.SetEnabled(false);
+		SetShowBarVisible(false);
+		SetText(_messageLabel, "Get ready!");
+
+		for (int n = CountdownSeconds; n >= 1; n--)
+		{
+			ShowCountdownStep(n.ToString(), Sfx.CountdownTick);
+			await ToSignal(GetTree().CreateTimer(1.0, processAlways: false), Timer.SignalName.Timeout);
+			if (_battle != battle) // Abandoned from the pause menu meanwhile.
+				return;
+		}
+
+		ShowCountdownStep("Fight!", Sfx.CountdownGo);
+		await ToSignal(GetTree().CreateTimer(0.5, processAlways: false), Timer.SignalName.Timeout);
+		if (_battle != battle)
+			return;
 
 		battle.Start();
-		UpdateHud();
 		SetProcess(true);
+	}
+
+	private void ShowCountdownStep(string text, Sfx sound)
+	{
+		SetText(_numberLabel, text);
+		_numberLabel.PivotOffset = _numberLabel.Size / 2;
+		_numberLabel.Scale = new Vector2(1.6f, 1.6f);
+		_numberLabel.CreateTween()
+			.TweenProperty(_numberLabel, "scale", Vector2.One, 0.3)
+			.SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Back);
+		AudioManager.Instance.Play(sound);
 	}
 
 	/// <summary>Ends the current battle without reporting a result.</summary>
@@ -308,13 +344,15 @@ public partial class GameScreen : VBoxContainer
 
 	private Tween PlayDefeatAnimation()
 	{
-		// Let the killing blow's flash and shake (0.25s) finish first.
-		_monsterSprite.PivotOffset = _monsterSprite.Size / 2;
+		// The battle is already over, so the clock is stopped while this plays.
 		_defeatTween = CreateTween();
-		_defeatTween.TweenInterval(0.3);
-		_defeatTween.TweenProperty(_monsterSprite, "modulate:a", 0f, 0.6);
-		_defeatTween.Parallel().TweenProperty(_monsterSprite, "scale", new Vector2(0.3f, 0.3f), 0.6)
-			.SetEase(Tween.EaseType.In).SetTrans(Tween.TransitionType.Back);
+		_defeatTween.TweenInterval(0.3); // Let the killing blow's flash and shake (0.25s) finish first.
+		for (int i = 0; i < DefeatBlinks; i++)
+		{
+			_defeatTween.TweenProperty(_monsterSprite, "modulate:a", 0.15f, 0.07);
+			_defeatTween.TweenProperty(_monsterSprite, "modulate:a", 1f, 0.07);
+		}
+		_defeatTween.TweenProperty(_monsterSprite, "modulate:a", 0f, 1.0).SetEase(Tween.EaseType.Out);
 		return _defeatTween;
 	}
 

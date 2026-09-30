@@ -55,7 +55,7 @@ Effects are code-driven (tweens), so a single still image per monster is enough 
 |---|---|---|
 | Player hits it | Tinted **red** for 0.25 s and shaken left/right; a yellow damage number with a black outline floats up from the upper middle | A mostly red monster barely changes when tinted; give it light or non-red areas (see Dragon). |
 | Player answers wrong | Monster lunges: scales to 120% and back | Keep the margin so it doesn't crowd the HP bar above. |
-| Monster defeated | Fades out while shrinking to 30% | None. |
+| Monster defeated | Blinks 5 times, then fades out over 1 s (the stage clock is stopped) | None. |
 
 ### Monster briefs
 

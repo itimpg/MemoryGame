@@ -30,11 +30,13 @@ warning and stays silent. `Tests/MemoryGame.Tests/AudioFileTests.cs` fails if a 
 | `Sfx/blocked` | Wrong answer saved by the Second Chance upgrade | Shield clang, relief | Two-note chime |
 | `Sfx/level_up` | Numbers get one digit longer | Short rising jingle | Rising arpeggio |
 | `Sfx/level_down` | Numbers get one digit shorter | Short falling jingle | Falling arpeggio |
-| `Sfx/monster_defeated` | The monster's HP reaches 0 | Big, final; plays with the fade-out animation (~0.9 s) | Falling sweep |
+| `Sfx/monster_defeated` | The monster's HP reaches 0 | Big, final; plays as the monster blinks and fades out (~2 s) | Falling sweep |
 | `Sfx/stage_clear` | The Stage Cleared screen opens | Triumphant fanfare, 1–2 s | Four-note arpeggio |
 | `Sfx/upgrade_pick` | An upgrade is chosen | Magical "power-up" | Two high notes |
 | `Sfx/game_over` | Time runs out and the run ends | Defeat sting, 1–2 s | Descending square notes |
 | `Sfx/timer_tick` | Once per second during the last 5 seconds of a stage | Clock tick that builds tension | 1500 Hz blip |
+| `Sfx/countdown_tick` | Each "3, 2, 1" of the countdown before a stage | Clear, anticipating beep | 1000 Hz tone |
+| `Sfx/countdown_go` | "Fight!" at the end of the countdown | Energetic start signal (gong, horn, sword draw) | Two-note square |
 
 ## Music
 

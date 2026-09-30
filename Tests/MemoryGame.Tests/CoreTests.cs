@@ -186,6 +186,18 @@ public class BattleTests
 	}
 
 	[Fact]
+	public void Clock_does_not_run_before_the_battle_starts()
+	{
+		var setup = new StageSetup(1, new Monster("Test", 100), Rules.StartingDigits, Rules.ShowDuration);
+		var battle = new Battle(Rules, new Random(1), setup, new RunStats(), new UpgradeSet());
+
+		Assert.Equal(Rules.StageDuration, battle.TimeLeft); // Full time is known up front, e.g. for a countdown.
+		battle.Tick(10f);
+		Assert.Equal(Rules.StageDuration, battle.TimeLeft);
+		Assert.Equal(BattlePhase.NotStarted, battle.Phase);
+	}
+
+	[Fact]
 	public void Hides_the_number_after_the_show_duration()
 	{
 		var battle = StartedBattle();

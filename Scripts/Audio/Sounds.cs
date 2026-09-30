@@ -17,6 +17,8 @@ public enum Sfx
 	UpgradePick,
 	GameOver,
 	TimerTick,
+	CountdownTick,
+	CountdownGo,
 }
 
 public enum MusicTrack { Menu, Battle }
