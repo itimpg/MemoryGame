@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Godot;
+using MemoryGame.Audio;
 using MemoryGame.Core;
 
 namespace MemoryGame.UI;
@@ -62,6 +63,7 @@ public partial class StageClearScreen : VBoxContainer
 			AutowrapMode = TextServer.AutowrapMode.WordSmart,
 			CustomMinimumSize = new Vector2(0, 130),
 		};
+		button.AddToGroup(AudioManager.SilentButtonGroup); // Main plays the upgrade sound instead.
 		button.Pressed += () => EmitSignal(SignalName.UpgradeChosen, upgrade.Id);
 		return button;
 	}

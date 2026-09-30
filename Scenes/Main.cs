@@ -1,5 +1,6 @@
 using System;
 using Godot;
+using MemoryGame.Audio;
 using MemoryGame.BestRuns;
 using MemoryGame.Core;
 using MemoryGame.UI;
@@ -72,6 +73,7 @@ public partial class Main : Control
 	{
 		foreach (var s in _screens)
 			s.Visible = s == screen;
+		AudioManager.Instance.PlayMusic(screen == _gameScreen ? MusicTrack.Battle : MusicTrack.Menu);
 	}
 
 	private void ShowMainMenu() => ShowScreen(_mainMenu);
@@ -103,6 +105,7 @@ public partial class Main : Control
 		{
 			// Every upgrade is on offer for now; unlocks (meta progression) will narrow this pool.
 			_stageClear.Display(run, run.RollUpgradeOffer(UpgradeCatalog.All));
+			AudioManager.Instance.Play(Sfx.StageClear);
 			ShowScreen(_stageClear);
 			return;
 		}
@@ -115,6 +118,7 @@ public partial class Main : Control
 	private void OnUpgradeChosen(string upgradeId)
 	{
 		_run!.Upgrades.Add(UpgradeCatalog.ById(upgradeId));
+		AudioManager.Instance.Play(Sfx.UpgradePick);
 		StartNextStage();
 	}
 

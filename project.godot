@@ -43,3 +43,7 @@ theme/custom="res://Themes/default_theme.tres"
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="mobile"
 environment/defaults/default_clear_color=Color(0.11, 0.12, 0.16, 1)
+
+[autoload]
+
+Audio="*res://Scripts/Audio/AudioManager.cs"

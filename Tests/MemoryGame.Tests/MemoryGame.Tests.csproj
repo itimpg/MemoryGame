@@ -10,6 +10,7 @@
     <!-- Godot-free game logic, compiled straight into the tests (the game assembly needs the Godot runtime). -->
     <Compile Include="../../Scripts/Core/**/*.cs" Link="Core/%(RecursiveDir)%(Filename)%(Extension)" />
     <Compile Include="../../Scripts/BestRuns/BestRunTable.cs" Link="BestRuns/BestRunTable.cs" />
+    <Compile Include="../../Scripts/Audio/Sounds.cs" Link="Audio/Sounds.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />

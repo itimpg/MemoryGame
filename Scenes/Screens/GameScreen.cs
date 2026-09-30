@@ -1,4 +1,5 @@
 using Godot;
+using MemoryGame.Audio;
 using MemoryGame.Core;
 
 namespace MemoryGame.UI;
@@ -21,6 +22,9 @@ public partial class GameScreen : VBoxContainer
 	private Tween? _spriteTween;
 	private Tween? _flashTween;
 	private Tween? _defeatTween;
+
+	private const int TimerWarningSeconds = 5;
+	private int _lastTickSecond;
 	private Tween? _healthTween;
 
 	private Label _stageLabel = null!;
@@ -71,6 +75,7 @@ public partial class GameScreen : VBoxContainer
 		ResetMonsterSprite();
 		_showBar.MaxValue = battle.ShowDuration;
 		UpdateStreakLabel(battle);
+		_lastTickSecond = int.MaxValue;
 
 		battle.Start();
 		UpdateHud();
@@ -106,6 +111,17 @@ public partial class GameScreen : VBoxContainer
 		UpdateHud();
 		if (_battle.Phase == BattlePhase.Showing)
 			_showBar.Value = _battle.ShowDuration - _battle.PhaseElapsed;
+		PlayTimerWarning(_battle);
+	}
+
+	/// <summary>Ticks once per second during the last seconds of a stage.</summary>
+	private void PlayTimerWarning(Battle battle)
+	{
+		int secondsLeft = Mathf.CeilToInt(battle.TimeLeft);
+		if (battle.IsOver || secondsLeft > TimerWarningSeconds || secondsLeft == _lastTickSecond)
+			return;
+		_lastTickSecond = secondsLeft;
+		AudioManager.Instance.Play(Sfx.TimerTick);
 	}
 
 	public override void _UnhandledInput(InputEvent @event)
@@ -134,6 +150,8 @@ public partial class GameScreen : VBoxContainer
 	{
 		if (_battle is null)
 			return;
+		if (_battle.Phase == BattlePhase.Input)
+			AudioManager.Instance.Play(Sfx.KeyPress);
 		_battle.EnterDigit(digit);
 		// Once the last digit is in, OnAnswerChecked has already shown the result.
 		if (_battle.Phase == BattlePhase.Input)
@@ -148,6 +166,7 @@ public partial class GameScreen : VBoxContainer
 			case BattlePhase.Showing:
 				SetText(_numberLabel, battle.CurrentNumber);
 				SetText(_messageLabel, "Remember this!");
+				AudioManager.Instance.Play(Sfx.NumberShow);
 				_showBar.Value = battle.ShowDuration;
 				SetShowBarVisible(true);
 				_keypad.SetEnabled(false);
@@ -174,11 +193,13 @@ public partial class GameScreen : VBoxContainer
 		if (won)
 		{
 			SetText(_messageLabel, $"{battle.Monster.Name} defeated!", CorrectColor);
+			AudioManager.Instance.Play(Sfx.MonsterDefeated);
 			await ToSignal(PlayDefeatAnimation(), Tween.SignalName.Finished);
 		}
 		else
 		{
 			SetText(_messageLabel, "Time's up!", WrongColor);
+			AudioManager.Instance.Play(Sfx.GameOver);
 			await ToSignal(GetTree().CreateTimer(0.8, processAlways: false), Timer.SignalName.Timeout);
 		}
 
@@ -205,18 +226,26 @@ public partial class GameScreen : VBoxContainer
 			string bonus = answer.DamageMultiplier > 1.001f ? $" (x{answer.DamageMultiplier:0.##})" : "";
 			SetText(_messageLabel, $"Hit! {answer.Damage} damage{bonus}  {answer.AnswerTime:0.00}s{levelText}", CorrectColor);
 			PlayHit(answer.Damage);
+			AudioManager.Instance.Play(Sfx.Hit);
 		}
 		else if (answer.MistakeForgiven)
 		{
 			SetText(_messageLabel, $"Wrong — you entered {answer.Entered}\nSecond Chance: no time lost{levelText}", WrongColor);
 			ShowPopup("Blocked!", CorrectColor);
+			AudioManager.Instance.Play(Sfx.Blocked);
 		}
 		else
 		{
 			string monster = _battle!.Monster.Name;
 			SetText(_messageLabel, $"Wrong — you entered {answer.Entered}\nThe {monster} strikes! -{answer.TimePenalty:0}s{levelText}", WrongColor);
 			PlayMonsterAttack(answer.TimePenalty);
+			AudioManager.Instance.Play(Sfx.Miss);
 		}
+
+		if (answer.DigitChange > 0)
+			AudioManager.Instance.Play(Sfx.LevelUp);
+		else if (answer.DigitChange < 0)
+			AudioManager.Instance.Play(Sfx.LevelDown);
 
 		UpdateStreakLabel(_battle!);
 		if (answer.IsCorrect)
